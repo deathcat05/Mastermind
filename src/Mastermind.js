@@ -12,6 +12,7 @@ const emptyCircle = require('./images/emptyCircle.png');
 //Board Size for Mastermind table
 const NUM_ROWS = 8, NUM_COLS = 5;
 
+
 class StatusRow extends Component {
     
 render(){
@@ -21,7 +22,7 @@ render(){
     return (
             <table className="status_circles">
                 <tbody>
-                    <tr><td><img className="large_circle" src={red} alt="red circle" /></td>
+                    <tr><td><img className="large_circle" src={blue} alt="red circle" /></td>
                     <td><img className="large_circle" src={color} alt={colorName}/></td></tr>
                 </tbody>
             </table>
@@ -48,25 +49,40 @@ class Palette extends Component {
         )
     }
 }
-class MastermindTable extends Component {
-    mastermindTableRow(row, feedback = undefined) {
-        return <tr>
-            {row.map((circle, idx) => <td key={idx}><img className="large_circle" src={circle.color} alt={circle.colorName} /></td>)}
-            <td className="feedback_cell">{feedback ? this.props.feedbackCircles(feedback) : ""}</td>
-        </tr>
-
+class Circle extends Component {
+    render() {
+        console.log('circle is:', this.props.statusCircle);
+        return (
+            <td>
+                <img className="large_circle" src={this.props.statusCircle.color} alt={this.props.statusCircle.colorName} />
+            </td>
+        );
     }
+    
+}
+class MastermindTableRow extends Component {
+  
+    render() {
+        let feedback = undefined;
+            return (
+            <tr>
+                {this.props.row.map((statusCircle, idx) => <Circle key={idx} statusCircle={this.props.statusCircle}/> )}
+                    
+                    
+                    
+                    <td className="feedback_cell">{feedback ? this.props.feedbackArray.feedbackCircles(feedback) : ""}</td>
+            </tr>);
+    }
+}
+class MastermindTable extends Component {
+   
     render() {
         console.log(this.props.feedbackArray);
         return (
             
             <table className="board_table">
                     <tbody>
-                       {this.mastermindTableRow(this.props.mastermindArray[1], this.props.feedbackArray[0])}
-                        {this.mastermindTableRow(this.props.mastermindArray[1], this.props.feedbackArray[0])}
-                        {this.mastermindTableRow(this.props.mastermindArray[0])}
-                        
-                        
+                        <MastermindTableRow row={this.props.mastermindArray[0]} statusCircle={this.props.statusCircle} feedbackCircles={this.props.feedbackCircles} feedbackArray={this.props.feedbackArray}/>
                     </tbody>
             </table>
         );
@@ -159,8 +175,8 @@ class Mastermind extends Component {
             <div className="Mastermind">
                 <StatusRow statusCircle={this.state.statusCircle}/>
                 <div style={{height: "400px"}}>&nbsp;</div>
-                <MastermindTable feedbackCircles={this.feedbackCircles} mastermindArray={this.state.mastermindArray} feedbackArray={this.state.feedbackArray}/>
-                <Palette paletteColors={this.paletteColors} selectedPaletteCircle={this.selectedPaletteCircle} />       
+                <MastermindTable feedbackCircles={this.feedbackCircles} mastermindArray={this.state.mastermindArray} feedbackArray={this.state.feedbackArray} statusCircle={this.state.statusCircle}/>
+                <Palette paletteColors={this.paletteColors} selectedPaletteCircle={this.selectedPaletteCircle} />           
             </div>
         )
 
