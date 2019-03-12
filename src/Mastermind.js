@@ -16,13 +16,13 @@ const NUM_ROWS = 8, NUM_COLS = 5;
 class StatusRow extends Component {
     
 render(){
-    let color = this.props.statusCircle['color'];
+    let color = this.props.statusCircle.color;
     let colorName = this.props.statusCircle.colorName;
     console.log('Inside status row. color is: ', color);
     return (
             <table className="status_circles">
                 <tbody>
-                    <tr><td><img className="large_circle" src={blue} alt="red circle" /></td>
+                    <tr><td><img className="large_circle" src={blue} alt="blue circle" /></td>
                     <td><img className="large_circle" src={color} alt={colorName}/></td></tr>
                 </tbody>
             </table>
@@ -51,22 +51,31 @@ class Palette extends Component {
 }
 class Circle extends Component {
     render() {
-        console.log('circle is:', this.props.statusCircle);
+        console.log('circle is:', this.props.circle);
         return (
             <td>
-                <img className="large_circle" src={this.props.statusCircle.color} alt={this.props.statusCircle.colorName} />
+                <img className="large_circle" onClick={() => this.props.handleCircleColorChange(this.props.circleIdx)} src={this.props.circle.color} alt={this.props.circle.colorName} />
             </td>
         );
     }
     
 }
 class MastermindTableRow extends Component {
-  
+    feedbackCircles(feedback) {
+        return (<table>
+            <tbody className="feedback_table">
+                <tr><td><img className="small_circle" src={feedback[0].color} alt={feedback[0].colorName} /></td>
+                    <td><img className="small_circle" src={feedback[1].color} alt={feedback[1].colorName} /></td></tr>
+                <tr><td><img className="small_circle" src={feedback[2].color} alt={feedback[2].colorName} /></td>
+                    <td><img className="small_circle" src={feedback[3].color} alt={feedback[3].colorName} /></td></tr>
+            </tbody>
+        </table>);
+    }
     render() {
         let feedback = undefined;
             return (
             <tr>
-                {this.props.row.map((statusCircle, idx) => <Circle key={idx} statusCircle={this.props.statusCircle}/> )}
+                {this.props.row.map((circle, idx) => <Circle circleIdx={idx} circle={circle} selectedPaletteCircle={this.props.selectedPaletteCircle} handleCircleColorChange={this.props.handleCircleColorChange}/> )}
                     
                     
                     
@@ -75,14 +84,13 @@ class MastermindTableRow extends Component {
     }
 }
 class MastermindTable extends Component {
-   
     render() {
         console.log(this.props.feedbackArray);
         return (
             
             <table className="board_table">
                     <tbody>
-                        <MastermindTableRow row={this.props.mastermindArray[0]} statusCircle={this.props.statusCircle} feedbackCircles={this.props.feedbackCircles} feedbackArray={this.props.feedbackArray}/>
+                        <MastermindTableRow row={this.props.mastermindArray} statusCircle={this.props.statusCircle} feedbackArray={this.props.feedbackArray} handleCircleColorChange={this.props.handleCircleColorChange}/>
                     </tbody>
             </table>
         );
@@ -116,7 +124,7 @@ class Mastermind extends Component {
             this.nonFilledCircle,
             this.nonFilledCircle,
         ];
-        let nextRow = [this.nonFilledCircle, this.nonFilledCircle, this.nonFilledCircle, this.nonFilledCircle];
+        //let nextRow = [this.nonFilledCircle, this.nonFilledCircle, this.nonFilledCircle, this.nonFilledCircle];
 
         let activeRowFeedback = [
             this.nonFilledCircle,
@@ -136,13 +144,14 @@ class Mastermind extends Component {
         console.log('mastermindtable is:' ,mastermindtable);
         this.state = {
             mastermindtable,
-            mastermindArray: [activeRow, nextRow],
-            feedbackArray: [activeRowFeedback],
+            mastermindArray: activeRow,
+            feedbackArray: activeRowFeedback,
             statusCircle: {color: emptyCircle, colorName: 'Empty circle'}
         }
+
         console.log('mastermind array is: ', this.state.mastermindArray)
         this.selectedPaletteCircle = this.selectedPaletteCircle.bind(this);
-       this.feedbackCircles = this.feedbackCircles.bind(this);
+       this.handleCircleColorChange = this.handleCircleColorChange.bind(this);
     }
 
     componentDidMount() {
@@ -153,30 +162,40 @@ class Mastermind extends Component {
         console.log('selected a palette color', circle.colorName);
         this.setState({statusCircle: circle});
     }
+    handleCircleColorChange(circleIdx){
+        console.log('inside handleCircleColorChange function');
+        console.log('coldIdx is:', circleIdx);
+        console.log('clicked circle is', this.state.mastermindArray[circleIdx]);
+        console.log('status circle is', this.state.statusCircle);
 
+        console.log('circle  color is ', this.state.circleColor);
+
+        let circleRowIdx = this.state.mastermindArray[circleIdx];
+       
+        let theCircleRow = this.state.mastermindArray.slice();
+        theCircleRow[circleIdx] = {circle: this.state.statusCircle};
+
+
+        let newMastermindTable = this.state.mastermindtable.slice();
+
+        newMastermindTable[circleRowIdx] = theCircleRow;
+
+        this.setState({
+            mastermindtable: newMastermindTable
+        });
+
+    }
     getRandomIdx(low, high) {
 
             return Math.floor(Math.random() * (high - low + 1) + low);
     }
-
-    feedbackCircles(feedback) {
-        return (<table>
-            <tbody className="feedback_table">
-                <tr><td><img className="small_circle" src={feedback[0].color} alt={feedback[0].colorName} /></td>
-                    <td><img className="small_circle" src={feedback[1].color} alt={feedback[1].colorName} /></td></tr>
-                <tr><td><img className="small_circle" src={feedback[2].color} alt={feedback[2].colorName} /></td>
-                    <td><img className="small_circle" src={feedback[3].color} alt={feedback[3].colorName} /></td></tr>
-            </tbody>
-            </table>);
-    }
-
     render() {
         return (
             <div className="Mastermind">
                 <StatusRow statusCircle={this.state.statusCircle}/>
                 <div style={{height: "400px"}}>&nbsp;</div>
-                <MastermindTable feedbackCircles={this.feedbackCircles} mastermindArray={this.state.mastermindArray} feedbackArray={this.state.feedbackArray} statusCircle={this.state.statusCircle}/>
-                <Palette paletteColors={this.paletteColors} selectedPaletteCircle={this.selectedPaletteCircle} />           
+                <MastermindTable  mastermindArray={this.state.mastermindArray} feedbackArray={this.state.feedbackArray} statusCircle={this.state.statusCircle} handleCircleColorChange={this.handleCircleColorChange}/>
+                <Palette paletteColors={this.paletteColors} selectedPaletteCircle={this.selectedPaletteCircle} />              
             </div>
         )
 
