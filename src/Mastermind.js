@@ -90,7 +90,7 @@ class MastermindTable extends Component {
             
             <table className="board_table">
                     <tbody>
-                        <MastermindTableRow row={this.props.mastermindArray} statusCircle={this.props.statusCircle} feedbackArray={this.props.feedbackArray} handleCircleColorChange={this.props.handleCircleColorChange}/>
+                        <MastermindTableRow row={this.props.mastermindArray} statusCircle={this.props.statusCircle} feedbackArray={this.props.feedbackArray} handleCircleColorChange={this.props.handleCircleColorChange} circle={this.props.circle}/>
                     </tbody>
             </table>
         );
@@ -162,19 +162,20 @@ class Mastermind extends Component {
         console.log('selected a palette color', circle.colorName);
         this.setState({statusCircle: circle});
     }
+
     handleCircleColorChange(circleIdx){
         console.log('inside handleCircleColorChange function');
         console.log('coldIdx is:', circleIdx);
         console.log('clicked circle is', this.state.mastermindArray[circleIdx]);
         console.log('status circle is', this.state.statusCircle);
+        //let circle = this.state.statusCircle;
 
-        console.log('circle  color is ', this.state.circleColor);
-
+        //console.log('declared circle function is:', this.state.circle)
         let circleRowIdx = this.state.mastermindArray[circleIdx];
-       
+       // let circleToChange = this.state.statusCircle;
         let theCircleRow = this.state.mastermindArray.slice();
-        theCircleRow[circleIdx] = {circle: this.state.statusCircle};
-
+        theCircleRow[circleIdx] = this.state.statusCircle;
+        console.log('clicked circle is now: ', theCircleRow[circleIdx]);
 
         let newMastermindTable = this.state.mastermindtable.slice();
 
@@ -184,6 +185,7 @@ class Mastermind extends Component {
             mastermindtable: newMastermindTable
         });
 
+       // console.log('circle is now: ', this.state.circle);
     }
     getRandomIdx(low, high) {
 
@@ -194,7 +196,7 @@ class Mastermind extends Component {
             <div className="Mastermind">
                 <StatusRow statusCircle={this.state.statusCircle}/>
                 <div style={{height: "400px"}}>&nbsp;</div>
-                <MastermindTable  mastermindArray={this.state.mastermindArray} feedbackArray={this.state.feedbackArray} statusCircle={this.state.statusCircle} handleCircleColorChange={this.handleCircleColorChange}/>
+                <MastermindTable  mastermindArray={this.state.mastermindArray} feedbackArray={this.state.feedbackArray} statusCircle={this.state.statusCircle} handleCircleColorChange={this.handleCircleColorChange} circle={this.circle}/>
                 <Palette paletteColors={this.paletteColors} selectedPaletteCircle={this.selectedPaletteCircle} />              
             </div>
         )
