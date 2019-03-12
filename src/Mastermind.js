@@ -12,13 +12,17 @@ const emptyCircle = require('./images/emptyCircle.png');
 //Board Size for Mastermind table
 const NUM_ROWS = 8, NUM_COLS = 5;
 
+let uniqueSeed = 0;
+function nextUniqueKey() {
+    return uniqueSeed += 1;
+} //This is needed in order for multiple iterations of the rendering. Necessary for React, but not my purposes. 
 
 class StatusRow extends Component {
     
 render(){
     let color = this.props.statusCircle.color;
     let colorName = this.props.statusCircle.colorName;
-    console.log('Inside status row. color is: ', color);
+    console.log('Inside status row. color is: ', colorName);
     return (
             <table className="status_circles">
                 <tbody>
@@ -51,7 +55,7 @@ class Palette extends Component {
 }
 class Circle extends Component {
     render() {
-        console.log('circle is:', this.props.circle);
+       // console.log('circle is:', this.props.circle);
         return (
             <td>
                 <img className="large_circle" onClick={() => this.props.handleCircleColorChange(this.props.circleIdx)} src={this.props.circle.color} alt={this.props.circle.colorName} />
@@ -75,7 +79,7 @@ class MastermindTableRow extends Component {
         let feedback = undefined;
             return (
             <tr>
-                {this.props.row.map((circle, idx) => <Circle circleIdx={idx} circle={circle} selectedPaletteCircle={this.props.selectedPaletteCircle} handleCircleColorChange={this.props.handleCircleColorChange}/> )}
+                    {this.props.row.map((circle, idx) => <Circle key={nextUniqueKey()} circleIdx={idx} circle={circle} selectedPaletteCircle={this.props.selectedPaletteCircle} handleCircleColorChange={this.props.handleCircleColorChange}/> )}
                     
                     
                     
@@ -85,12 +89,12 @@ class MastermindTableRow extends Component {
 }
 class MastermindTable extends Component {
     render() {
-        console.log(this.props.feedbackArray);
+        //console.log(this.props.feedbackArray);
         return (
             
             <table className="board_table">
                     <tbody>
-                        <MastermindTableRow row={this.props.mastermindArray} statusCircle={this.props.statusCircle} feedbackArray={this.props.feedbackArray} handleCircleColorChange={this.props.handleCircleColorChange} circle={this.props.circle}/>
+                    <MastermindTableRow key={nextUniqueKey()} row={this.props.mastermindArray} statusCircle={this.props.statusCircle} feedbackArray={this.props.feedbackArray} handleCircleColorChange={this.props.handleCircleColorChange} circle={this.props.circle}/>
                     </tbody>
             </table>
         );
@@ -151,7 +155,7 @@ class Mastermind extends Component {
 
         console.log('mastermind array is: ', this.state.mastermindArray)
         this.selectedPaletteCircle = this.selectedPaletteCircle.bind(this);
-       this.handleCircleColorChange = this.handleCircleColorChange.bind(this);
+        this.handleCircleColorChange = this.handleCircleColorChange.bind(this);
     }
 
     componentDidMount() {
@@ -168,24 +172,25 @@ class Mastermind extends Component {
         console.log('coldIdx is:', circleIdx);
         console.log('clicked circle is', this.state.mastermindArray[circleIdx]);
         console.log('status circle is', this.state.statusCircle);
-        //let circle = this.state.statusCircle;
-
-        //console.log('declared circle function is:', this.state.circle)
+        
+    
         let circleRowIdx = this.state.mastermindArray[circleIdx];
-       // let circleToChange = this.state.statusCircle;
         let theCircleRow = this.state.mastermindArray.slice();
+
         theCircleRow[circleIdx] = this.state.statusCircle;
         console.log('clicked circle is now: ', theCircleRow[circleIdx]);
 
         let newMastermindTable = this.state.mastermindtable.slice();
 
         newMastermindTable[circleRowIdx] = theCircleRow;
+        console.log('the CircleRow is', theCircleRow)
 
         this.setState({
-            mastermindtable: newMastermindTable
+            mastermindArray: theCircleRow,
+            mastermindtable: newMastermindTable,
+         
         });
 
-       // console.log('circle is now: ', this.state.circle);
     }
     getRandomIdx(low, high) {
 
@@ -196,7 +201,7 @@ class Mastermind extends Component {
             <div className="Mastermind">
                 <StatusRow statusCircle={this.state.statusCircle}/>
                 <div style={{height: "400px"}}>&nbsp;</div>
-                <MastermindTable  mastermindArray={this.state.mastermindArray} feedbackArray={this.state.feedbackArray} statusCircle={this.state.statusCircle} handleCircleColorChange={this.handleCircleColorChange} circle={this.circle}/>
+                <MastermindTable key={nextUniqueKey()} mastermindArray={this.state.mastermindArray} feedbackArray={this.state.feedbackArray} statusCircle={this.state.statusCircle} handleCircleColorChange={this.handleCircleColorChange} circle={this.circle}/>
                 <Palette paletteColors={this.paletteColors} selectedPaletteCircle={this.selectedPaletteCircle} />              
             </div>
         )
