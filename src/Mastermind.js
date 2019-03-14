@@ -16,6 +16,7 @@ let uniqueSeed = 0;
 function nextUniqueKey() {
     return uniqueSeed += 1;
 } //This is needed in order for multiple iterations of the rendering. Necessary for React, but not my purposes. 
+
 class ColorsToGuess extends Component {
     render(){
         console.log('inside Colors To Guess');
@@ -93,14 +94,11 @@ class MastermindTableRow extends Component {
         </table>);
     }
     render() {
-        let feedback = undefined;
+        let feedback = this.props.feedbackArray;
         return (
             <tr>
                 {this.props.row.map((circle, idx) => <Circle key={nextUniqueKey()} circleIdx={idx} circle={circle} selectedPaletteCircle={this.props.selectedPaletteCircle} handleCircleColorChange={this.props.handleCircleColorChange} />)}
-
-
-
-                <td className="feedback_cell">{feedback ? this.props.feedbackArray.feedbackCircles(this.props.feedback) : ""}</td>
+                <td className="feedback_cell">{feedback ? this. feedbackCircles(feedback) : ""}</td>
             </tr>);
     }
 }
@@ -111,7 +109,7 @@ class MastermindTable extends Component {
 
             <table className="board_table">
                 <tbody>
-                    <MastermindTableRow key={nextUniqueKey()} row={this.props.mastermindArray} statusCircle={this.props.statusCircle} feedbackArray={this.props.feedbackArray} handleCircleColorChange={this.props.handleCircleColorChange} circle={this.props.circle} />
+                    <MastermindTableRow key={nextUniqueKey()} row={this.props.mastermindArray} statusCircle={this.props.statusCircle} feedbackArray={this.props.feedbackArray} handleCircleColorChange={this.props.handleCircleColorChange} />
                 </tbody>
             </table>
         );
@@ -195,6 +193,7 @@ class Mastermind extends Component {
     }
 
     handleCircleColorChange(circleIdx) {
+        //Just outputting to console for checking.
         console.log('inside handleCircleColorChange function');
         console.log('coldIdx is:', circleIdx);
         console.log('clicked circle is', this.state.mastermindArray[circleIdx]);
@@ -229,7 +228,7 @@ class Mastermind extends Component {
                 <StatusRow statusCircle={this.state.statusCircle} />
                 <ColorsToGuess colorsToGuess={this.state.colorsToGuessArray}/>
                 <div style={{ height: "400px" }}>&nbsp;</div>
-                <MastermindTable key={nextUniqueKey()} mastermindArray={this.state.mastermindArray} feedbackArray={this.state.feedbackArray} statusCircle={this.state.statusCircle} handleCircleColorChange={this.handleCircleColorChange} circle={this.circle} />
+                <MastermindTable key={nextUniqueKey()} mastermindArray={this.state.mastermindArray} feedbackArray={this.state.feedbackArray} statusCircle={this.state.statusCircle} handleCircleColorChange={this.handleCircleColorChange} />
                 <Palette paletteColors={this.paletteColors} selectedPaletteCircle={this.selectedPaletteCircle} />
             </div>
         )
