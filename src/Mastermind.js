@@ -8,6 +8,7 @@ const purple = require('./images/purpleCircle.png');
 const teal = require('./images/tealCircle.png');
 const magenta = require('./images/magentaCircle.png');
 const emptyCircle = require('./images/emptyCircle.png');
+const transparentCircle = require('./images/transparentCircle.png');
 
 //Board Size for Mastermind table
 const NUM_ROWS = 8, NUM_COLS = 5;
@@ -86,7 +87,7 @@ class MastermindTableRow extends Component {
     feedbackCircles(feedback) {
         return (<table>
             <tbody className="feedback_table">
-                <tr><td><img className="small_circle" src={feedback[0].color} alt={feedback[0].colorName} /></td>
+                <tr><td><img className="small_circle" src={feedback[0].color} alt={feedback[0].colorName}  /></td>
                     <td><img className="small_circle" src={feedback[1].color} alt={feedback[1].colorName} /></td></tr>
                 <tr><td><img className="small_circle" src={feedback[2].color} alt={feedback[2].colorName} /></td>
                     <td><img className="small_circle" src={feedback[3].color} alt={feedback[3].colorName} /></td></tr>
@@ -133,7 +134,12 @@ class Mastermind extends Component {
         colorName: 'Empty circle'
     };
 
-  
+    feedbackCircle = {
+        color: transparentCircle,
+        colorName: 'Transparent Circle',
+        visibility: null
+    };
+
     constructor(props) {
         super(props);
 
@@ -148,10 +154,10 @@ class Mastermind extends Component {
         //let nextRow = [this.nonFilledCircle, this.nonFilledCircle, this.nonFilledCircle, this.nonFilledCircle];
 
         let activeRowFeedback = [
-            this.nonFilledCircle,
-            this.nonFilledCircle,
-            this.nonFilledCircle,
-            this.nonFilledCircle
+            this.feedbackCircle,
+            this.feedbackCircle,
+            this.feedbackCircle,
+            this.feedbackCircle    
         ];
 
       let colorsToGuess = [
@@ -177,7 +183,7 @@ class Mastermind extends Component {
             colorsToGuessArray: colorsToGuess,
             statusCircle: { color: emptyCircle, colorName: 'Empty circle' }
         }
-
+    
         console.log('mastermind array is: ', this.state.mastermindArray)
         console.log('colorsToGuessArray is:', this.state.colorsToGuessArray);
         this.selectedPaletteCircle = this.selectedPaletteCircle.bind(this);
@@ -220,7 +226,7 @@ class Mastermind extends Component {
         });
 
         const rowToCheck = this.checkGussedCircles(this.state.mastermindArray);
-        
+    
         if(rowToCheck)
         {
             console.log('rowToCheck was true;');
@@ -235,57 +241,64 @@ class Mastermind extends Component {
 
     checkGussedCircles(guessedArray) {
         console.log('inside checkGuessedCircles');
-        let keyArray = this.state.colorsToGuessArray; 
-        let newFeedbackArray = this.state.feedbackArray;
-
-
+        let keyArray = JSON.parse(JSON.stringify(this.state.colorsToGuessArray)); 
+        let newFeedbackArray = JSON.parse(JSON.stringify(this.state.feedbackArray));
+        
         console.log('guessedArray is:', guessedArray);
         console.log('keyArray is:', keyArray);
 
-        let numRedCircles = 0; 
-        let colorsToCheck = [];
-
-        console.log('colorsToCheck before state chagne: ', colorsToCheck);
+       let numRedCircles = 0; 
+       let numEmptyCircles = 0;
+        console.log('newFeedBackArray before state chagne: ', newFeedbackArray);
      
         //Checking for correct color and position.
         for(let i = 0; i < guessedArray.length; i++)
         {
-            if(guessedArray[i].colorName === keyArray[i].colorName){
-                console.log('correct color and position!');
-                numRedCircles += 1; 
-            }
-            else {
-                colorsToCheck.push(guessedArray[i]);
-            }
-        }
-        console.log('colorsToCheck is now: ', colorsToCheck);
-        for(let i  = 0; i < colorsToCheck.length; i++)
-        {
-            if(colorsToCheck[i].colorName === keyArray[i].colorName)
+            if(guessedArray[i].colorName === keyArray[i].colorName)
             {
-              //  numWhiteCircles += 1;
-            }
+               numRedCircles += 1; 
+               keyArray[i] = {
+                   color: undefined,
+                   colorName: undefined
+               }
+            }  
         }
-
-        for(let r = 0; r < numRedCircles; r++)
+        //Checking for correct color
+        for(let j = 0; j < guessedArray.length; j++)
         {
-            console.log('inside redCircles for loop')
+            if(keyArray.find(color => (color.colorName !== undefined) && (color.colorName === guessedArray[j].colorName)))
+            {
+                numEmptyCircles += 1;
+            }
+
+        }
+    
+
+        for (let r = 0; r < numRedCircles; r++) {
+
             newFeedbackArray[r] = {
                 color: red,
-                colorName: 'Red'
-            };
-        }
-
-        if (numRedCircles === 4) {
-            console.log('winner!');
-            alert('You won!');
-            return {
-                feedbackArray: this.state.newFeedbackArray
+                colorName: 'Red Circle'
+            }
+            for (let e = r+1; e < numEmptyCircles; e++) {
+                newFeedbackArray[e] = {
+                    color: emptyCircle,
+                    colorName: 'Empty Circle'
+                }
             }
         }
 
+       console.log('numEmptyCircles is: ', numEmptyCircles);
+       
+        
+        console.log('newFeedbackArray after state change is: ', newFeedbackArray);
+     
+      return {
+          feedbackArray: this.state.newFeedbackArray
+        }
+
+      
     }
- 
     getRandomIdx(low, high) {
 
         return Math.floor(Math.random() * (high - low + 1) + low);
