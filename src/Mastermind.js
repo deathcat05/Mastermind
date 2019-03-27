@@ -98,28 +98,28 @@ class MastermindTableRow extends Component {
         let feedback = this.props.feedback;
         return (
             <tr>
-                {this.props.row.map((circle, idx) => 
-                <Circle onClick={() => this.props.checkGussedCircles(this.props.row)} key={nextUniqueKey()} 
-                        circleIdx={idx} circle={circle} selectedPaletteCircle={this.props.selectedPaletteCircle} 
+                {this.props.row.map((circle, idx) =>
+                    <Circle onClick={() => this.props.checkGussedCircles(this.props.row)} key={nextUniqueKey()}
+                        circleIdx={idx} circle={circle} selectedPaletteCircle={this.props.selectedPaletteCircle}
                         handleCircleColorChange={this.props.handleCircleColorChange} />)}
                 <td className="feedback_cell"> {feedback ? this.feedbackCircles(feedback) : ""}</td>
             </tr>);
     }
 }
 class MastermindTable extends Component {
-  
+
     render() {
         return (
 
             <table className="board_table">
                 <tbody>{
-                        this.props.mastermindtable.map((row) =>
+                    this.props.mastermindtable.map((row) =>
                         <MastermindTableRow key={nextUniqueKey()}
-                            row={this.props.mastermindArray} statusCircle={this.props.statusCircle} 
-                            feedback={this.props.feedback} handleCircleColorChange={this.props.handleCircleColorChange} 
+                            row={this.props.mastermindArray} statusCircle={this.props.statusCircle}
+                            feedback={this.props.feedback} handleCircleColorChange={this.props.handleCircleColorChange}
                             colorsToGuess={this.props.colorsToGuess} checkGussedCircles={this.props.checkGussedCircles} />)
-                    }
-                    
+                }
+
                 </tbody>
             </table>
         );
@@ -221,7 +221,7 @@ class Mastermind extends Component {
         let circleRowIdx = this.state.mastermindArray[circleIdx];
         let theCircleRow = this.state.mastermindArray.slice();
         let row = this.state.currentRow;
-    
+
 
         theCircleRow[circleIdx] = this.state.statusCircle;
         let clickedCircle = theCircleRow[circleIdx];
@@ -232,7 +232,7 @@ class Mastermind extends Component {
         newMastermindTable[circleRowIdx] = theCircleRow;
         console.log('the CircleRow is', theCircleRow)
 
-        
+
 
         const checkRow = this.checkGussedCircles(theCircleRow);
         console.log(this.checkGussedCircles(theCircleRow));
@@ -249,15 +249,15 @@ class Mastermind extends Component {
         else if (checkRow.gameWon === false) {
             console.log('currentRow is: ', row);
             console.log('game won is false');
-           
+
             this.setState({
                 mastermindArray: theCircleRow,
 
                 mastermindtable: newMastermindTable,
             });
-            
-            }
-         
+
+        }
+
 
         console.log('feedBackArray is:', this.state.feedbackArray)
     }
@@ -343,7 +343,7 @@ class Mastermind extends Component {
         }
 
         for (let e = 0; e < numEmptyCircles; e++) {
-            if(e.colorName !== 'Red Circle'){
+            if (e.colorName !== 'Red Circle') {
                 newFeedbackArray[e + numRedCircles] = {
                     color: emptyCircle,
                     colorName: 'Empty Circle'
